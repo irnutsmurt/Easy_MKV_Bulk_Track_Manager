@@ -1,5 +1,9 @@
-# requirements.txt
-pymediainfo
-tqdm
-guessit
-distro
+babelfish==0.6.1
+distro==1.9.0
+guessit==3.8.0
+keyboard==0.13.5
+pymediainfo==6.1.0
+python-dateutil==2.9.0.post0
+rebulk==3.2.0
+six==1.16.0
+tqdm==4.66.5
