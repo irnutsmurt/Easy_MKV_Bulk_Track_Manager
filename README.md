@@ -1,8 +1,12 @@
-# MKV Audio Subtitle Changer
+# Easy MKV Bulk Track Manager
 
 ## Overview
 
-**MKV Audio Subtitle Changer** is a Python-based application designed to simplify the management and editing of MKV (Matroska Video) files. This tool allows users to effortlessly set forced or default audio and subtitle tracks, extract and display detailed media information, and maintain organized JSON files for data persistence. With a user-friendly, menu-driven interface, navigating through directories and performing bulk or individual file operations becomes intuitive and efficient.
+**Easy MKV Bulk Track Manager** is a Python-based tool designed with simplicity in mind, aimed at the average user who just wants to get things done without overcomplicating the process. I built this tool because I’ve seen too many overengineered solutions out there, requiring users to navigate confusing menus or know technical details that most people don't care about.
+
+This tool lets you quickly set audio and subtitle tracks as default or forced without needing to understand track metadata or complex file structures. It has a straightforward, menu-driven interface that guides you step-by-step, making it easy to manage multiple files at once or work on individual files.
+
+My goal was to create something that doesn’t require a degree in computer science to use. With **Easy MKV Bulk Track Manager**, you can easily set your default audio or subtitle tracks, so you can actually enjoy watching your MKV media—rather than spending hours figuring out how to manually set forced or default flags one file at a time.
 
 ## Features
 
@@ -30,23 +34,21 @@ Before installing and running the application, ensure that your system meets the
 First, clone the repository to your local machine using Git:
 
 ```bash
-git clone https://github.com/yourusername/MKV-Audio-Subtitle-Changer.git
-cd MKV-Audio-Subtitle-Changer/mkvscripts
+git clone https://github.com/irnutsmurt/Easy_MKV_Bulk_Track_Manager.git
+cd Easy_MKV_Bulk_Track_Manager/mkvscripts
 ```
-
-*Replace `yourusername` with your actual GitHub username.*
 
 ### 2. Install MKVToolNix (`mkvpropedit`)
 
 The application requires `mkvpropedit` for editing MKV files.
 
 - **Linux/macOS:**
-  - The application will attempt to install `mkvpropedit` automatically if it's not found on your system.
+  - The script will attempt to install `mkvpropedit` by prompting the user if they'd like to install it if it's not found on your system.
 - **Windows:**
   - Download and install `MKVToolNix` from the official website: [https://mkvtoolnix.download/downloads.html#windows](https://mkvtoolnix.download/downloads.html#windows)
   - Ensure that `mkvpropedit` is accessible in your system's PATH.
 
-### 3. (Optional) Set Up a Python Virtual Environment
+### 3. (Optional but strongly encouraged) Set Up a Python Virtual Environment
 
 Creating a virtual environment is recommended to manage dependencies without affecting your global Python installation.
 
@@ -259,4 +261,4 @@ For any questions, issues, or suggestions, please open an issue in the repositor
 
 ---
 
-*Thank you for using MKV Audio Subtitle Changer! We hope it enhances your media management experience.*
+*Thank you for using Easy MKV Bulk Track Manager! I hope it makes it easy for you.*
