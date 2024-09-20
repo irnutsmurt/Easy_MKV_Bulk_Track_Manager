@@ -124,7 +124,11 @@ After ensuring all dependencies are met, the main menu provides several options:
 5. **Exit:**
    - Close the application.
 
-### 4. Navigating and Editing MKV Files
+### 4. Automatic Permission Handling (Linux/macOS)
+
+If the script detects that it cannot write to a file due to permissions, it will ask for your `sudo` password to proceed. The password will be securely used and released immediately after completing the task.
+
+### 5. Navigating and Editing MKV Files
 
 1. **Select "Edit MKV Files":**
    - From the main menu, choose the option to **Edit MKV Files** (e.g., option `3`).
@@ -152,7 +156,7 @@ After ensuring all dependencies are met, the main menu provides several options:
 4. **Return to Main Menu:**
    - At any point, select **option `0`** to return to the main menu.
 
-### 5. Checking Media Information
+### 6. Checking Media Information
 
 1. **Select "Browse Media in Stored Directory" or "Check Media Info in a Custom Directory":**
    - Choose the appropriate option from the main menu.
@@ -168,7 +172,7 @@ After ensuring all dependencies are met, the main menu provides several options:
    - Choose to check info for a specific file or all files.
    - Media information will be **displayed on the screen** and **saved** to the corresponding JSON file in the `json` directory.
 
-### 6. Backup and Restore
+### 7. Backup and Restore
 
 - **Backup:**
   - Before making changes to the JSON data, a timestamped backup is automatically created.
