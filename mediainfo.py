@@ -96,15 +96,13 @@ def gather_tracks(file_path):
         "text": []
     }
 
-    track_id_counter = 0  # Track IDs start from 1
     for track in media_info.tracks:
         if track.track_type.lower() == "menu":
             continue  # Skip menu tracks
-        track_id_counter += 1
 
         track_type = track.track_type.lower()
         track_data = {
-            "track_id": track_id_counter,
+            "track_id": getattr(track, "track_id", None),  # Use real track ID if available
             "track_type": track_type,
             "duration": getattr(track, "duration", None),
             "file_size": getattr(track, "file_size", None),
@@ -113,13 +111,13 @@ def gather_tracks(file_path):
             "height": getattr(track, "height", None),
             "frame_rate": getattr(track, "frame_rate", None),
             "codec": getattr(track, "codec", None),
-            "channels": getattr(track, "channel_s", None),
+            "channels": getattr(track, "channel_s", None),  # Handle channels correctly for audio
             "sampling_rate": getattr(track, "sampling_rate", None),
             "bit_rate": getattr(track, "bit_rate", None),
             "language": getattr(track, "language", 'und'),
-            "track_name": getattr(track, "track_name", None),
-            "title": getattr(track, "title", ''),
-            "forced": getattr(track, "forced", None)
+            "track_name": getattr(track, "track_name", ""),  # Default to empty string if None
+            "title": getattr(track, "title", ""),  # Default to empty string if None
+            "forced": "Yes" if getattr(track, "forced", "No") == "Yes" else "No"  # Correct forced flag handling
         }
 
         if track_type == "general":
@@ -132,6 +130,7 @@ def gather_tracks(file_path):
             tracks_info["text"].append(track_data)
 
     return tracks_info
+
 
 def print_media_info(media_info, fields):
     """Print media info to the screen based on selected fields."""
