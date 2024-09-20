@@ -1,9 +1,11 @@
 # mediainfo.py
+
 import os
 import json
 import re
 import logging
 import shutil
+from datetime import datetime
 from pymediainfo import MediaInfo
 from tqdm import tqdm
 from common import get_mkv_files, get_subdirectories  # Import from common.py
@@ -15,10 +17,6 @@ JSON_DIR = "json"
 def get_media_files(directory, extensions=['.mkv', '.mp4', '.avi']):
     """Get a list of all media files in the specified directory."""
     return [f for f in os.listdir(directory) if os.path.splitext(f)[1].lower() in extensions]
-
-def get_subdirectories(directory):
-    """Get a list of subdirectories in the specified directory."""
-    return [f for f in os.listdir(directory) if os.path.isdir(os.path.join(directory, f))]
 
 def load_json(show_name):
     """Load the JSON file for a specific show if it exists."""
@@ -35,6 +33,7 @@ def save_json(show_name, data):
         os.makedirs(JSON_DIR)
     json_file_path = os.path.join(JSON_DIR, f"{show_name}.json")
     with open(json_file_path, 'w') as file:
+        # Sort the data based on season and episode numbers if applicable
         sorted_data = {k: data[k] for k in sorted(data.keys(), key=lambda s: int(re.search(r'\d+', s).group()) if re.search(r'\d+', s) else 0)}
         json.dump(sorted_data, file, indent=4)
 
@@ -48,19 +47,27 @@ def extract_season_episode(file_name):
     return None, None
 
 def create_backup_json(show_name):
-    """Create a backup of the show's JSON file before making changes."""
+    """Create a timestamped backup of the show's JSON file before making changes."""
     json_file_path = os.path.join(JSON_DIR, f"{show_name}.json")
-    backup_file_path = os.path.join(JSON_DIR, f"{show_name}.backup.json")
+
+    # Ensure the JSON_DIR exists
+    if not os.path.exists(JSON_DIR):
+        os.makedirs(JSON_DIR)
+        logging.debug(f"Created JSON directory: {JSON_DIR}")
 
     if not os.path.exists(json_file_path):
         logging.warning(f"No JSON file found for {show_name} to backup.")
         return
 
-    if not os.path.exists(backup_file_path):
+    # Create a timestamped backup
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    backup_file_path = os.path.join(JSON_DIR, f"{show_name}_backup_{timestamp}.json")
+
+    try:
         shutil.copyfile(json_file_path, backup_file_path)
         logging.info(f"Backup created: {backup_file_path}")
-    else:
-        logging.info(f"Backup already exists: {backup_file_path}")
+    except Exception as e:
+        logging.error(f"Failed to create backup for {show_name}: {e}")
 
 def restore_backup_json(show_name):
     """Restore the show's JSON file from the backup."""
@@ -126,8 +133,8 @@ def gather_tracks(file_path):
 
     return tracks_info
 
-def print_media_info_from_json(media_info, fields):
-    """Print media info that is retrieved from the JSON for specific fields."""
+def print_media_info(media_info, fields):
+    """Print media info to the screen based on selected fields."""
     for track_type, tracks in media_info.items():
         if fields == "All Fields" or fields.lower() in track_type.lower():
             print(f"\n{track_type.capitalize()} Tracks:")
@@ -135,7 +142,7 @@ def print_media_info_from_json(media_info, fields):
                 for key, value in track.items():
                     if value is not None:
                         print(f"  {key}: {value}")
-                print("----------------------------------------")  # Separate each track
+                print("----------------------------------------")  # Separator for readability
 
 def check_if_media_info_exists(show_name, file_name):
     """Check if media info for a specific file is already in the JSON file."""
@@ -199,6 +206,9 @@ def check_and_print_media_info(show_name, file_path, fields):
         logging.info(f"Processing {file_name} and adding media info to JSON file.")
         media_info = update_media_info(show_name, file_path)
 
+    # Print the media info to the screen
+    print_media_info(media_info, fields)
+
 def check_all_media_info(directory, media_files, show_name, fields):
     """Check media info for all media files in the specified directory."""
     total_files = len(media_files)
@@ -207,6 +217,7 @@ def check_all_media_info(directory, media_files, show_name, fields):
             file_path = os.path.join(directory, file_name)
             check_and_print_media_info(show_name, file_path, fields)
             progress_bar.update(1)
+    logging.info("All media info has been processed.")
 
 def select_media_info_fields(main_menu=False):
     """Menu to select which media info fields to display."""
@@ -218,9 +229,9 @@ def select_media_info_fields(main_menu=False):
         print("4. Text")
         print("5. All Fields")
         print("6. Return to previous menu")
-        print("7. Return to main menu")
+        print("0. Return to main menu")
 
-        choice = input("\nEnter your choice: ")
+        choice = input("\nEnter your choice: ").strip()
 
         if choice == '1':
             return "general"
@@ -234,7 +245,7 @@ def select_media_info_fields(main_menu=False):
             return "All Fields"
         elif choice == '6' and not main_menu:
             return "previous"
-        elif choice == '7' or (choice == '6' and main_menu):
+        elif choice == '0' or (choice == '6' and main_menu):
             return "main_menu"
         else:
             logging.error("Invalid choice. Please select a valid option.")
@@ -243,7 +254,7 @@ def browse_directory(directory, show_name=None):
     """Allows the user to browse a directory, checking for subdirectories or MKV files."""
     directorynav.navigate_and_browse(
         directory,
-        media_action=lambda current_dir, mkv_files: browse_media_menu(current_dir, mkv_files, show_name),
+        media_action=lambda current_dir: browse_media_menu(current_dir, get_mkv_files(current_dir), show_name),
         on_exit=lambda: "main_menu"
     )
 
@@ -258,7 +269,7 @@ def browse_media_menu(current_directory, mkv_files, show_name=None):
     print("3. Return to previous directory")
     print("4. Return to main menu")
 
-    choice = input("\nEnter your choice: ")
+    choice = input("\nEnter your choice: ").strip()
 
     if choice == '1':
         # List MKV files
@@ -267,7 +278,7 @@ def browse_media_menu(current_directory, mkv_files, show_name=None):
             print(f"{idx}. {file_name}")
 
         try:
-            file_idx = int(input(f"\nEnter the file number (1-{len(mkv_files)}): "))
+            file_idx = int(input(f"\nEnter the file number (1-{len(mkv_files)}): ").strip())
             if 1 <= file_idx <= len(mkv_files):
                 file_path = os.path.join(current_directory, mkv_files[file_idx - 1])
                 # Show granular field menu
@@ -277,8 +288,6 @@ def browse_media_menu(current_directory, mkv_files, show_name=None):
                 elif fields == "previous":
                     return
                 check_and_print_media_info(show_name or os.path.basename(current_directory), file_path, fields)
-                media_info = check_if_media_info_exists(show_name or os.path.basename(current_directory), mkv_files[file_idx - 1])
-                print_media_info_from_json(media_info, fields)
             else:
                 logging.error(f"Invalid file number. Please enter a number between 1 and {len(mkv_files)}.")
         except ValueError:
@@ -292,8 +301,6 @@ def browse_media_menu(current_directory, mkv_files, show_name=None):
         elif fields == "previous":
             return
         check_all_media_info(current_directory, mkv_files, show_name or os.path.basename(current_directory), fields)
-        print("\nAll media info has been processed.")
-        # After checking all media info, the menu will reappear due to the while loop
 
     elif choice == '3':
         return  # Return to the previous directory
@@ -303,4 +310,3 @@ def browse_media_menu(current_directory, mkv_files, show_name=None):
 
     else:
         logging.error("Invalid choice. Please select a valid option.")
-

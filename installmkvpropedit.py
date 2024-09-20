@@ -57,7 +57,7 @@ def install_mkvtoolnix():
             return False
 
     elif os_type == "Windows":
-        logging.info("Please download and install MKVToolNix from the official website: https://mkvtoolnix.download/")
+        logging.info("Please download and install MKVToolNix from the official website: https://mkvtoolnix.download/downloads.html#windows")
         return False  # Cannot automate installation on Windows securely
 
     else:
@@ -84,5 +84,5 @@ def ensure_mkvpropedit_installed():
             logging.error("MKVToolNix is required to proceed. Exiting.")
             return False
     else:
-        logging.info("MKVToolNix (mkvpropedit) is installed and ready to use.")
+        logging.debug("MKVToolNix (mkvpropedit) is installed and ready to use.")
         return True

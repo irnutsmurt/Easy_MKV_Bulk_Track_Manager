@@ -2,32 +2,16 @@
 
 import os
 import sys
-import json
 import logging
 
 # Import functions from other modules
 import mediainfo
 import mkvdefaults
 import installmkvpropedit
+from common import load_config, save_config  # Import from common.py
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
-
-# Path to the configuration file
-CONFIG_FILE = "config.json"
-
-def load_config():
-    """Load configuration from the JSON file."""
-    if os.path.exists(CONFIG_FILE):
-        with open(CONFIG_FILE, 'r') as file:
-            return json.load(file)
-    else:
-        return {}
-
-def save_config(config):
-    """Save configuration to the JSON file."""
-    with open(CONFIG_FILE, 'w') as file:
-        json.dump(config, file, indent=4)
+logging.basicConfig(level=logging.DEBUG, format='%(levelname)s: %(message)s')  # Set to DEBUG for detailed logs
 
 def configure_settings():
     """Configure settings such as media directory."""
@@ -92,7 +76,11 @@ def menu():
                 continue  # Return to the main menu
 
         elif choice == '3':
-            mkvdefaults.edit_mkv_files_menu()
+            result = mkvdefaults.edit_mkv_files_menu()
+            logging.debug(f"edit_mkv_files_menu returned: {result}")
+            if result == "main_menu":
+                logging.debug("Returning to main menu from Edit MKV files.")
+                continue  # Loop back to display the main menu again
 
         elif choice == '4':
             configure_settings()
