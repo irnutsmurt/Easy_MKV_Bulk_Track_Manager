@@ -1,5 +1,5 @@
 # mediainfo.py
-
+import pymediainfo
 import os
 import json
 import re
