@@ -215,6 +215,8 @@ The application relies on the following external Python packages:
 
 These dependencies are listed in the `requirements.txt` file and can be installed using `pip`.
 
+This product uses [MediaInfo](http://mediaarea.net/MediaInfo) library, Copyright (c) 2002-2024 [MediaArea.net SARL](Info@MediaArea.net).
+
 ### `requirements.txt`
 
 ```plaintext
