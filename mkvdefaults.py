@@ -51,7 +51,7 @@ def modify_mkv_track(file_path, track_id, flag_name, flag_value, dry_run=False, 
     try:
         logging.debug(f"Attempting to modify Track ID {track_id}: Setting {flag_name} to {flag_value}.")
 
-        if use_sudo and sudo_password:
+        if use_sudo:
             process = subprocess.Popen(
                 command,
                 stdin=subprocess.PIPE,
@@ -85,10 +85,10 @@ def modify_mkv_track(file_path, track_id, flag_name, flag_value, dry_run=False, 
         if specific_error_pattern.search(e.stderr):
             raise PermissionError("Permission denied while modifying MKV track.")
         else:
-            logging.error(f"Error modifying track {track_id} in file {file_path}: {e.stderr}")
+            logging.error(f"Error modifying track {track_id} in file '{file_path}': {e.stderr}")
     except Exception as e:
         logging.error(f"An error occurred: {e}")
-        logging.error(f"Error modifying track {track_id} in file {file_path}: {e}")
+        logging.error(f"Error modifying track {track_id} in file '{file_path}': {e}")
 
     if not dry_run and not use_sudo:
         update_media_info(os.path.basename(os.path.dirname(file_path)), file_path)
@@ -114,7 +114,7 @@ def bulk_modify_files(directory, mkv_files, selected_track_info, track_type, fla
                     continue
 
                 is_selected_track = (
-                    (track.get('language', 'und').lower().strip() == selected_track_info['language'].lower().strip()) and
+                    ((track.get('language') or 'und').lower().strip() == selected_track_info['language'].lower().strip()) and
                     ((track.get('title') or '').lower().strip() == selected_track_info['title'].lower().strip())
                 )
 
@@ -172,7 +172,7 @@ def bulk_set_forced_flag(directory, mkv_files, track_type):
             tracks = tracks_info.get(track_type if track_type != 'subtitle' else 'text', [])
 
         for track in tracks:
-            language = (track.get('language', 'und') or '').lower().strip()
+            language = (track.get('language') or 'und').lower().strip()
             title = (track.get('title') or '').lower().strip()
             key = (language, title)
             if key not in unique_tracks:
@@ -226,7 +226,7 @@ def bulk_set_forced_flag(directory, mkv_files, track_type):
         if media_info:
             tracks = media_info.get(track_type if track_type != 'subtitle' else 'text', [])
             has_track = any(
-                (track.get('language', 'und') or '').lower().strip() == selected_track_info['language'].lower().strip() and
+                (track.get('language') or 'und').lower().strip() == selected_track_info['language'].lower().strip() and
                 (track.get('title') or '').lower().strip() == selected_track_info['title'].lower().strip()
                 for track in tracks
             )
@@ -238,7 +238,7 @@ def bulk_set_forced_flag(directory, mkv_files, track_type):
             tracks_info = gather_tracks(file_path)
             tracks = tracks_info.get(track_type if track_type != 'subtitle' else 'text', [])
             has_track = any(
-                (track.get('language', 'und') or '').lower().strip() == selected_track_info['language'].lower().strip() and
+                (track.get('language') or 'und').lower().strip() == selected_track_info['language'].lower().strip() and
                 (track.get('title') or '').lower().strip() == selected_track_info['title'].lower().strip()
                 for track in tracks
             )
@@ -340,7 +340,7 @@ def bulk_set_default_flag(directory, mkv_files, track_type):
             tracks = tracks_info.get(track_type if track_type != 'subtitle' else 'text', [])
 
         for track in tracks:
-            language = (track.get('language', 'und') or '').lower().strip()
+            language = (track.get('language') or 'und').lower().strip()
             title = (track.get('title') or '').lower().strip()
             key = (language, title)
             if key not in unique_tracks:
@@ -394,7 +394,7 @@ def bulk_set_default_flag(directory, mkv_files, track_type):
         if media_info:
             tracks = media_info.get(track_type if track_type != 'subtitle' else 'text', [])
             has_track = any(
-                (track.get('language', 'und') or '').lower().strip() == selected_track_info['language'].lower().strip() and
+                (track.get('language') or 'und').lower().strip() == selected_track_info['language'].lower().strip() and
                 (track.get('title') or '').lower().strip() == selected_track_info['title'].lower().strip()
                 for track in tracks
             )
@@ -406,7 +406,7 @@ def bulk_set_default_flag(directory, mkv_files, track_type):
             tracks_info = gather_tracks(file_path)
             tracks = tracks_info.get(track_type if track_type != 'subtitle' else 'text', [])
             has_track = any(
-                (track.get('language', 'und') or '').lower().strip() == selected_track_info['language'].lower().strip() and
+                (track.get('language') or 'und').lower().strip() == selected_track_info['language'].lower().strip() and
                 (track.get('title') or '').lower().strip() == selected_track_info['title'].lower().strip()
                 for track in tracks
             )
@@ -508,7 +508,7 @@ def bulk_set_default_and_forced_flag(directory, mkv_files, track_type):
             tracks = tracks_info.get(track_type if track_type != 'subtitle' else 'text', [])
 
         for track in tracks:
-            language = (track.get('language', 'und') or '').lower().strip()
+            language = (track.get('language') or 'und').lower().strip()
             title = (track.get('title') or '').lower().strip()
             key = (language, title)
             if key not in unique_tracks:
@@ -562,7 +562,7 @@ def bulk_set_default_and_forced_flag(directory, mkv_files, track_type):
         if media_info:
             tracks = media_info.get(track_type if track_type != 'subtitle' else 'text', [])
             has_track = any(
-                (track.get('language', 'und') or '').lower().strip() == selected_track_info['language'].lower().strip() and
+                (track.get('language') or 'und').lower().strip() == selected_track_info['language'].lower().strip() and
                 (track.get('title') or '').lower().strip() == selected_track_info['title'].lower().strip()
                 for track in tracks
             )
@@ -574,7 +574,7 @@ def bulk_set_default_and_forced_flag(directory, mkv_files, track_type):
             tracks_info = gather_tracks(file_path)
             tracks = tracks_info.get(track_type if track_type != 'subtitle' else 'text', [])
             has_track = any(
-                (track.get('language', 'und') or '').lower().strip() == selected_track_info['language'].lower().strip() and
+                (track.get('language') or 'und').lower().strip() == selected_track_info['language'].lower().strip() and
                 (track.get('title') or '').lower().strip() == selected_track_info['title'].lower().strip()
                 for track in tracks
             )
@@ -899,6 +899,7 @@ def select_and_edit_single_file(directory, mkv_files, track_type):
     except Exception as e:
         logging.error(f"An error occurred while setting forced flags: {e}")
 
+
 def work_in_current_directory(directory):
     """Provide options to work with files in the current directory."""
     while True:
@@ -978,6 +979,7 @@ def refresh_media_info(show_name, directory):
     check_all_media_info(directory, media_files, show_name, fields)
     print("\nMedia information refreshed successfully.")
 
+
 def edit_mkv_files_menu():
     """Main menu for editing MKV files."""
     config = load_config()
@@ -994,7 +996,3 @@ def edit_mkv_files_menu():
     else:
         logging.debug(f"Received result from navigate_and_browse: {result}")
         return
-
-
-
-
